@@ -138,7 +138,7 @@ if __name__ == '__main__':
                         mp.parse()
 
                         if not is_header_written:
-                            f.write("time_rospy_secs, time_rospy_nsecs," + mp.get_header())
+                            f.write("time_rospy_secs,time_rospy_nsecs," + mp.get_header())
                             is_header_written = True
 
                         f.write("%d,%d,%s" % (t.secs, t.nsecs , mp.get_data()))
