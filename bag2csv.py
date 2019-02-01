@@ -7,10 +7,6 @@ from tqdm import tqdm
 import rosbag
 import inspect
 
-arg = "./autoware_2018-12-26-17-04-17.bag"
-
-topics = '/current_pose'
-
 
 class MessageParser(object):
 
@@ -25,7 +21,7 @@ class MessageParser(object):
         self.__parse_message_recursive(msg)
         self.__header = self.__header.rstrip(",")
         self.__data = self.__data.rstrip(",")
-        self.__header +="\n"
+        self.__header += "\n"
         self.__data += "\n"
 
     def get_data(self):
