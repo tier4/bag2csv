@@ -51,6 +51,9 @@ class MessageParser(object):
                         self.__data = self.__data + str(val) + ","
                 else:
                     self.__data = self.__data + str(val) + ","
+            elif self.__is_list(val) is True:
+                for i, v in enumerate(val):
+                    self.__parse_message_recursive(v, recursive_str=recursive_str + attr + "[" + str(i) + "]_")
             else:
                 self.__parse_message_recursive(val, recursive_str=recursive_str + attr + "_")
 
@@ -104,6 +107,13 @@ class MessageParser(object):
     @staticmethod
     def __is_primitive(val):
         if type(val) is int or type(val) is float or type(val) is bool or type(val) is str:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def __is_list(val):
+        if type(val) is list:
             return True
         else:
             return False
