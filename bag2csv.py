@@ -42,7 +42,15 @@ class MessageParser(object):
             val = getattr(elem, attr)
             if self.__is_primitive(val) is True:
                 self.__header = self.__header + recursive_str + attr + ","
-                self.__data = self.__data + str(val) + ","
+
+                # if data is binary str
+                if type(val) is str:
+                    if '\0' in val:
+                        self.__data = self.__data + "binary" + ","
+                    else:
+                        self.__data = self.__data + str(val) + ","
+                else:
+                    self.__data = self.__data + str(val) + ","
             else:
                 self.__parse_message_recursive(val, recursive_str=recursive_str + attr + "_")
 
