@@ -164,7 +164,7 @@ if __name__ == '__main__':
         bag.close()
 
     else:
-        print "invalid args" + str(args)
+        print "usage: python bag2csv.py [rosbag] [topic1] [topic2] ... [topicN]"
         sys.exit(1)
 
 
