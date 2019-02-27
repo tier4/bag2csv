@@ -155,10 +155,10 @@ if __name__ == '__main__':
                     mp.parse()
 
                     if not is_header_written:
-                        f.write("time_rospy_secs,time_rospy_nsecs," + mp.get_header())
+                        f.write("time_rospy_secs,time_rospy_nsecs,time_rospy," + mp.get_header())
                         is_header_written = True
-
-                    f.write("%d,%d,%s" % (t.secs, t.nsecs , mp.get_data()))
+                    time_rospy = t.secs + t.nsecs * 1e-9
+                    f.write('{0},{1},{2:.9f},{3}'.format(t.secs, t.nsecs , time_rospy,  mp.get_data()))
 
                     if (int(t.secs) - int(bag.get_start_time())) != progress_time:
                         progress_time += 1
