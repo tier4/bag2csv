@@ -18,7 +18,7 @@ class MessageParser(object):
     def parse(self):
         self.__header = ""
         self.__data = ""
-        self.__parse_message_recursive(msg)
+        self.__parse_message_recursive(self.__msg)
         self.__header = self.__header.rstrip(",")
         self.__data = self.__data.rstrip(",")
         self.__header += "\n"
@@ -115,6 +115,32 @@ class MessageParser(object):
             return False
 
 
+def generate_csv(b, tpc, opn):
+    is_header_written = False
+
+    # file open
+    with open(opn, "w") as f:
+
+        # progress bar
+        progress_time = 0
+        with tqdm(total=(int(b.get_end_time()) - int(b.get_start_time()))) as pbar:
+
+            # processing
+            for topic, msg, t in b.read_messages(topics=tpc):
+                mp = MessageParser(msg)
+                mp.parse()
+
+                if not is_header_written:
+                    f.write("time_rospy_secs,time_rospy_nsecs,time_rospy," + mp.get_header())
+                    is_header_written = True
+                time_rospy = t.secs + t.nsecs * 1e-9
+                f.write('{0},{1},{2:.9f},{3}'.format(t.secs, t.nsecs , time_rospy,  mp.get_data()))
+
+                if (int(t.secs) - int(bag.get_start_time())) != progress_time:
+                    progress_time += 1
+                    pbar.update(1)
+
+
 if __name__ == '__main__':
 
     args = sys.argv
@@ -130,46 +156,22 @@ if __name__ == '__main__':
     dummy = args.pop(0)
 
     # file read
-    filename = args.pop(0)
-    print "opening: '" + filename + "'..."
-    bag = rosbag.Bag(filename)
-    basename, ext = os.path.splitext(os.path.basename(filename))
-    topics = bag.get_type_and_topic_info()[1].keys()
+    filepath = args.pop(0)
+    basename, ext = os.path.splitext(os.path.basename(filepath))
 
-    # loop for topics
-    for arg in args:
-        if arg not in topics:
-            print "'" + arg + "' not found..."
-            continue
+    print "opening: '" + filepath + "'..."
 
-        output_name = basename + str(arg).replace('/', '_') + ".csv"
-        print "output topic: " + arg
-        print "save as: " + output_name + "..."
-        is_header_written = False
-
-        # file open
-        with open(output_name, "w") as f:
-
-            # progress bar
-            progress_time = 0
-            with tqdm(total=(int(bag.get_end_time()) - int(bag.get_start_time()))) as pbar:
-
-                # processing
-                for topic, msg, t in bag.read_messages(topics=arg):
-                    mp = MessageParser(msg)
-                    mp.parse()
-
-                    if not is_header_written:
-                        f.write("time_rospy_secs,time_rospy_nsecs,time_rospy," + mp.get_header())
-                        is_header_written = True
-                    time_rospy = t.secs + t.nsecs * 1e-9
-                    f.write('{0},{1},{2:.9f},{3}'.format(t.secs, t.nsecs , time_rospy,  mp.get_data()))
-
-                    if (int(t.secs) - int(bag.get_start_time())) != progress_time:
-                        progress_time += 1
-                        pbar.update(1)
-
-    bag.close()
+    with rosbag.Bag(filepath) as bag:
+        topics = bag.get_type_and_topic_info()[1].keys()
+        # loop for topics
+        for arg in args:
+            if arg in topics:
+                output_name = basename + str(arg).replace('/', '_') + ".csv"
+                print "output topic: " + arg
+                print "save as: " + output_name + "..."
+                generate_csv(b=bag, tpc=arg, opn=output_name)
+            else:
+                print "'" + arg + "' not found..."
 
 
 
