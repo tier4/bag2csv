@@ -134,9 +134,14 @@ if __name__ == '__main__':
     print "opening: '" + filename + "'..."
     bag = rosbag.Bag(filename)
     basename, ext = os.path.splitext(os.path.basename(filename))
+    topics = bag.get_type_and_topic_info()[1].keys()
 
     # loop for topics
     for arg in args:
+        if arg not in topics:
+            print "'" + arg + "' not found..."
+            continue
+
         output_name = basename + str(arg).replace('/', '_') + ".csv"
         print "output topic: " + arg
         print "save as: " + output_name + "..."
