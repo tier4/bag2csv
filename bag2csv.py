@@ -149,7 +149,7 @@ def create_parser():
     return ps
 
 
-def parse_bag_to_csv(filepath, topics):
+def convert_bag_to_csv(filepath, topics):
 
     basename, ext = os.path.splitext(os.path.basename(args.rosbag))
     print "opening: '" + filepath + "'..."
@@ -171,7 +171,7 @@ if __name__ == '__main__':
 
     parser = create_parser()
     args = parser.parse_args()
-    parse_bag_to_csv(filepath=args.rosbag, topics=args.topics)
+    convert_bag_to_csv(filepath=args.rosbag, topics=args.topics)
 
 
 
