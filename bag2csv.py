@@ -6,6 +6,7 @@ import os
 from tqdm import tqdm
 import rosbag
 import inspect
+import argparse
 
 
 class MessageParser(object):
@@ -136,42 +137,41 @@ def generate_csv(b, tpc, opn):
                 time_rospy = t.secs + t.nsecs * 1e-9
                 f.write('{0},{1},{2:.9f},{3}'.format(t.secs, t.nsecs , time_rospy,  mp.get_data()))
 
-                if (int(t.secs) - int(bag.get_start_time())) != progress_time:
+                if (int(t.secs) - int(b.get_start_time())) != progress_time:
                     progress_time += 1
                     pbar.update(1)
 
 
-if __name__ == '__main__':
+def create_parser():
+    ps = argparse.ArgumentParser(prog="bag2csv")
+    ps.add_argument('rosbag', help='rosbag filepath')
+    ps.add_argument('topics', nargs='*', help='topics name you want to save ( don\'t forget slash!!)')
+    return ps
 
-    args = sys.argv
 
-    # confirm the length of args
-    if len(args) > 2 and re.match('.*.bag', args[1]):
-        print "valid args" + str(args)
-    else:
-        print "usage: python bag2csv.py [rosbag] [topic1] [topic2] ... [topicN]"
-        sys.exit(1)
+def parse_bag_to_csv(filepath, topics):
 
-    # pop unnecessary arg
-    dummy = args.pop(0)
-
-    # file read
-    filepath = args.pop(0)
-    basename, ext = os.path.splitext(os.path.basename(filepath))
-
+    basename, ext = os.path.splitext(os.path.basename(args.rosbag))
     print "opening: '" + filepath + "'..."
 
     with rosbag.Bag(filepath) as bag:
-        topics = bag.get_type_and_topic_info()[1].keys()
+        topics_bag = bag.get_type_and_topic_info()[1].keys()
         # loop for topics
-        for arg in args:
-            if arg in topics:
-                output_name = basename + str(arg).replace('/', '_') + ".csv"
-                print "output topic: " + arg
+        for t in topics:
+            if t in topics_bag:
+                output_name = basename + str(t).replace('/', '_') + ".csv"
+                print "output topic: " + t
                 print "save as: " + output_name + "..."
-                generate_csv(b=bag, tpc=arg, opn=output_name)
+                generate_csv(b=bag, tpc=t, opn=output_name)
             else:
-                print "'" + arg + "' not found..."
+                print "'" + t + "' not found..."
+
+
+if __name__ == '__main__':
+
+    parser = create_parser()
+    args = parser.parse_args()
+    parse_bag_to_csv(filepath=args.rosbag, topics=args.topics)
 
 
 
