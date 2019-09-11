@@ -10,12 +10,14 @@
 
 ## Usage
 
-    $ python bag2csv.py [rosbag] [topic1] [topic2] ... [topicN]
-
-
-In addition, you can use the following shell script for multiple rosbags.
-
-    $ ./bag2csv_multi_bag.sh [rosbag1] [rosbag2] ... [rosbagN]
+    $ python bag2csv.py --bags [rosbag1] ... [rosbagN] --topics [topic1] ... [topicN]
     
-When you specify more topics to output, please edit `TOPICS` variable in `bag2csv_multi_bag.sh`.
-     
+    
+## Arguments Details
+  ```
+  -h, --help            show this help message and exit
+  -b [BAGS [BAGS ...]], --bags [BAGS [BAGS ...]]
+                                rosbag filepaths
+  -t [TOPICS [TOPICS ...]], --topics [TOPICS [TOPICS ...]]
+                                topics name you want to save ( don't forget slash!!)
+  ```
