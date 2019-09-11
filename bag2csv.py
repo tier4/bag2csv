@@ -144,14 +144,14 @@ def generate_csv(b, tpc, opn):
 
 def create_parser():
     ps = argparse.ArgumentParser(prog="bag2csv")
-    ps.add_argument('rosbag', help='rosbag filepath')
-    ps.add_argument('topics', nargs='*', help='topics name you want to save ( don\'t forget slash!!)')
+    ps.add_argument('-b', '--bags', nargs='*', required=True, help='rosbag filepaths')
+    ps.add_argument('-t', '--topics', nargs='*', required=True, help='topics name you want to save ( don\'t forget slash!!)')
     return ps
 
 
 def convert_bag_to_csv(filepath, topics):
 
-    basename, ext = os.path.splitext(os.path.basename(args.rosbag))
+    basename, ext = os.path.splitext(os.path.basename(filepath))
     print "opening: '" + filepath + "'..."
 
     with rosbag.Bag(filepath) as bag:
@@ -167,11 +167,14 @@ def convert_bag_to_csv(filepath, topics):
                 print "'" + t + "' not found..."
 
 
-if __name__ == '__main__':
-
+def main():
     parser = create_parser()
     args = parser.parse_args()
-    convert_bag_to_csv(filepath=args.rosbag, topics=args.topics)
+    print(args.bags)
+    print(args.topics)
+    for b in args.bags:
+        convert_bag_to_csv(filepath=b, topics=args.topics)
 
 
-
+if __name__ == '__main__':
+    main()
