@@ -4,9 +4,11 @@
 
 - ROS kinetic(Ubuntu 16.04)
 
+
 ## Dependencies
 
     $ pip install tqdm
+
 
 ## Usage
 
@@ -17,7 +19,7 @@
   ```
   -h, --help            show this help message and exit
   -b [BAGS [BAGS ...]], --bags [BAGS [BAGS ...]]
-                                rosbag filepaths
+                        rosbag filepaths
   -t [TOPICS [TOPICS ...]], --topics [TOPICS [TOPICS ...]]
-                                topics name you want to save ( don't forget slash!!)
+                        topics name you want to save ( don't forget slash!!)
   ```
