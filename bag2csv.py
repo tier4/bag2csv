@@ -8,6 +8,10 @@ import rosbag
 import inspect
 import argparse
 
+BAG = "fs13_autoware_2020-02-04-16-42-25_0.bag"
+TOPIC = ["/velocity_controller/debug_values"]
+#TOPIC = ["/current_pose"]
+
 
 class MessageParser(object):
 
@@ -51,6 +55,10 @@ class MessageParser(object):
             elif self.__is_list(val) is True:
                 for i, v in enumerate(val):
                     self.__parse_message_recursive(v, recursive_str=recursive_str + attr + "[" + str(i) + "]_")
+            elif self.__is_tuple(val) is True:
+                for i, v in enumerate(val):
+                    self.__header = self.__header + attr + "[" + str(i) + "],"
+                    self.__data = self.__data + str(v) + ","
             else:
                 self.__parse_message_recursive(val, recursive_str=recursive_str + attr + "_")
 
@@ -115,6 +123,13 @@ class MessageParser(object):
         else:
             return False
 
+    @staticmethod
+    def __is_tuple(val):
+        if type(val) is tuple:
+            return True
+        else:
+            return False
+
 
 def generate_csv(b, tpc, opn):
     is_header_written = False
@@ -174,6 +189,11 @@ def main():
     print(args.topics)
     for b in args.bags:
         convert_bag_to_csv(filepath=b, topics=args.topics)
+
+    # debug code
+#    print(BAG)
+#    print(TOPIC)
+#    convert_bag_to_csv(filepath=BAG, topics=TOPIC)
 
 
 if __name__ == '__main__':
